@@ -4,7 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"os/exec"
 
+	"github.com/SamSyntax/create-spring-app/internal/misc"
+	"github.com/charmbracelet/bubbles/spinner"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -128,4 +133,39 @@ func FetchDependencies() (*InitMetadata, error) {
 		return nil, err
 	}
 	return &meta, nil
+}
+
+func DownloadAndExtract(targetUrl string, dir string) error {
+	errChan := make(chan error, 1)
+
+	go func() {
+		os.MkdirAll(dir, 0755)
+		res, err := http.Get(targetUrl)
+		if err != nil {
+			errChan <- err
+			return
+		}
+
+		defer res.Body.Close()
+
+		if res.StatusCode != http.StatusOK {
+			errChan <- fmt.Errorf("API error: %s", res.Status)
+			return
+		}
+
+		cmd := exec.Command("tar", "-xzf", "-", "-C", ".")
+		cmd.Stdin = res.Body
+		err = cmd.Run()
+		errChan <- err
+	}()
+
+	p := tea.NewProgram(misc.SpinnerModel{
+		Spinner: spinner.New(spinner.WithSpinner(spinner.Pulse)),
+		ErrChan: errChan,
+	})
+
+	_, err := p.Run()
+
+	return err
+
 }
