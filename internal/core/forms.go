@@ -1,0 +1,101 @@
+package core
+
+import (
+	"fmt"
+	"github.com/SamSyntax/create-spring-app/internal/fetcher"
+	"github.com/SamSyntax/create-spring-app/internal/misc"
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/log"
+)
+
+type ProjectConfig struct {
+	Build             string
+	Language          string
+	JavaVersion       string
+	ArtifactId        string
+	SpringBootVersion fetcher.Val
+	Dependencies      []string
+	Meta              *fetcher.InitMetadata
+	PackageName       string
+	GroupName         string
+}
+
+func CreateProjectConfig() (*ProjectConfig, error) {
+	meta, err := fetcher.FetchDependencies()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ProjectConfig{
+		Build:       "Maven",
+		Language:    "Java",
+		JavaVersion: "21",
+		SpringBootVersion: fetcher.Val{
+			ID:   meta.BootVersion.Default,
+			Name: meta.BootVersion.Default,
+		},
+		Dependencies: nil,
+		Meta:         meta,
+	}, nil
+}
+
+func (pc *ProjectConfig) CreateDepsForm() *huh.Form {
+	return huh.NewForm(
+		huh.NewGroup(
+			huh.NewMultiSelect[string]().Title("Dependencies").Options(
+				pc.Meta.DepJsonToHuh(pc.SpringBootVersion.ID)...,
+			).Value(&pc.Dependencies).Filterable(true).Validate(func(selected []string) error {
+				for _, id := range selected {
+					dep := pc.Meta.FindDependencyByID(id)
+					if dep != nil && !fetcher.CheckCompatibility(pc.SpringBootVersion.ID, dep.VersionRange) {
+						return fmt.Errorf("'%s' is not compatible with Spring Boot %s\n", dep.Name, pc.SpringBootVersion.Name)
+					}
+				}
+				return nil
+			}),
+		),
+	)
+}
+
+func RunForm(pc *ProjectConfig) error {
+	theme := GetCustomTheme()
+	err := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().Title("Project Name").Value(&pc.ArtifactId).Description("Enter Project Name").Validate(misc.ValidateNoSpaces)),
+
+		huh.NewGroup(
+			huh.NewInput().Title("Group Name").Value(&pc.GroupName).Placeholder("com.example").Description("Enter Group Name").Validate(misc.ValidateNoSpaces)),
+	).WithTheme(theme).Run()
+
+	err = huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().Title("Package Name").Value(&pc.PackageName).Placeholder(fmt.Sprintf("%s.%s", pc.GroupName, pc.ArtifactId)).Description("Enter package name").Validate(misc.ValidateNoSpaces)),
+
+		huh.NewGroup(
+			huh.NewSelect[fetcher.Val]().Title("SpringBoot version").Options(
+				pc.Meta.BootVersionJsonToHuh()...,
+			).Value(&pc.SpringBootVersion),
+		),
+
+		huh.NewGroup(
+			huh.NewSelect[string]().Title("Build Tool").Options(
+				huh.NewOption("Maven", "maven-project"),
+				huh.NewOption("Gradle - Groovy", "gradle-project"),
+				huh.NewOption("Gradle - Kotlin", "gradle-project-kotlin"),
+			).Value(&pc.Build)),
+
+		huh.NewGroup(
+			huh.NewSelect[string]().Title("Java Version").Options(
+				pc.Meta.JavaVersionJsonToHuh()...,
+			).Value(&pc.JavaVersion)),
+	).WithTheme(theme).Run()
+	if err != nil {
+		return err
+	}
+
+	depForm := pc.CreateDepsForm()
+	if err := depForm.Run(); err != nil {
+		log.Fatal(err)
+	}
+	return nil
+}
