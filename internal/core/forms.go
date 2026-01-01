@@ -8,37 +8,6 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-type ProjectConfig struct {
-	Build             string
-	Language          string
-	JavaVersion       string
-	ArtifactId        string
-	SpringBootVersion fetcher.Val
-	Dependencies      []string
-	Meta              *fetcher.InitMetadata
-	PackageName       string
-	GroupName         string
-}
-
-func CreateProjectConfig() (*ProjectConfig, error) {
-	meta, err := fetcher.FetchDependencies()
-	if err != nil {
-		return nil, err
-	}
-
-	return &ProjectConfig{
-		Build:       "Maven",
-		Language:    "Java",
-		JavaVersion: "21",
-		SpringBootVersion: fetcher.Val{
-			ID:   meta.BootVersion.Default,
-			Name: meta.BootVersion.Default,
-		},
-		Dependencies: nil,
-		Meta:         meta,
-	}, nil
-}
-
 func (pc *ProjectConfig) CreateDepsForm() *huh.Form {
 	return huh.NewForm(
 		huh.NewGroup(

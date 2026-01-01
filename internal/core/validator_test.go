@@ -2,9 +2,8 @@ package core
 
 import (
 	"encoding/json"
-	"testing"
-
 	"github.com/SamSyntax/create-spring-app/internal/fetcher"
+	"testing"
 )
 
 func TestProjectConfig_ValidateDependencies(t *testing.T) {
@@ -41,10 +40,10 @@ func TestProjectConfig_ValidateDependencies(t *testing.T) {
 	}
 
 	tests := []struct {
-		name          string
-		bootVersion   string
-		dependencies  []string
-		wantErr       bool
+		name         string
+		bootVersion  string
+		dependencies []string
+		wantErr      bool
 	}{
 		{
 			name:         "Compatible dependencies",

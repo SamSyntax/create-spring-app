@@ -1,6 +1,8 @@
 package misc
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestValidateNoSpaces(t *testing.T) {
 	tests := []struct {

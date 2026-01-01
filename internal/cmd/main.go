@@ -9,7 +9,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/log"
 	"net/http"
-	"net/url"
 	"os"
 	"os/exec"
 	"strings"
@@ -32,7 +31,7 @@ func main() {
 	if err != nil {
 		log.Error(fmt.Printf("Couldn't run: %e\n", err))
 	}
-	apiUrl := buildUrl(*conf)
+	apiUrl := core.BuildUrl(*conf)
 	split := strings.Split(dir, "/")
 	logger.LogInfo(fmt.Sprintf("Initializing project at %s...\n", split[len(split)-1]))
 	err = downloadAndExtract(apiUrl, conf.ArtifactId)
@@ -42,21 +41,6 @@ func main() {
 	}
 	logger.LogSuccess(fmt.Sprintf("Success! Project created in %s\n", split[len(split)-1]))
 
-}
-
-func buildUrl(conf core.ProjectConfig) string {
-	baseUrl := "https://start.spring.io/starter.tgz"
-	params := url.Values{}
-	params.Add("type", conf.Build)
-	params.Add("artifactId", conf.ArtifactId)
-	params.Add("baseDir", conf.ArtifactId)
-	params.Add("javaVersion", conf.JavaVersion)
-	params.Add("bootVersion", conf.SpringBootVersion.ID)
-	params.Add("groupId", conf.GroupName)
-	params.Add("packageName", conf.PackageName)
-	params.Add("dependencies", strings.Join(conf.Dependencies, ","))
-
-	return fmt.Sprintf("%s?%s", baseUrl, params.Encode())
 }
 
 func downloadAndExtract(targetUrl string, dir string) error {

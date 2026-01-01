@@ -21,7 +21,7 @@ func Test_buildUrl(t *testing.T) {
 		Dependencies: []string{"web", "actuator"},
 	}
 
-	got := buildUrl(conf)
+	got := core.BuildUrl(conf)
 	u, err := url.Parse(got)
 	if err != nil {
 		t.Fatalf("buildUrl returned invalid URL: %v", err)
@@ -51,4 +51,8 @@ func Test_buildUrl(t *testing.T) {
 			t.Errorf("Query param %s = %s, want %s", tt.key, gotVal, tt.want)
 		}
 	}
+}
+
+func BuildUrl(conf core.ProjectConfig) any {
+	panic("unimplemented")
 }
