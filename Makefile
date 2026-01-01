@@ -1,5 +1,9 @@
+OUT_DIR := "bin/csa"
+ENTRY_POINT := "internal/cmd/main.go"
 build: internal/cmd/main.go
-	@go build -o bin/csa internal/cmd/main.go
+	@go build -o $(OUT_DIR) $(ENTRY_POINT)
+run:
+	@make build && $(OUT_DIR) 
 test:
 	@go test -v ./...
 

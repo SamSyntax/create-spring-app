@@ -41,6 +41,8 @@ func CreateProjectConfig() (*ProjectConfig, error) {
 
 func BuildUrl(conf ProjectConfig) string {
 	baseUrl := "https://start.spring.io/starter.tgz"
+	bootVersion := strings.ReplaceAll(conf.SpringBootVersion.ID, ".BUILD", "")
+	fmt.Println(bootVersion, conf.SpringBootVersion.ID)
 	params := url.Values{}
 	params.Add("type", conf.Build)
 	params.Add("artifactId", conf.ArtifactId)
@@ -50,6 +52,6 @@ func BuildUrl(conf ProjectConfig) string {
 	params.Add("groupId", conf.GroupName)
 	params.Add("packageName", conf.PackageName)
 	params.Add("dependencies", strings.Join(conf.Dependencies, ","))
-
+	fmt.Printf("%s?%s\n", baseUrl, params.Encode())
 	return fmt.Sprintf("%s?%s", baseUrl, params.Encode())
 }

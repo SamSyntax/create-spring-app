@@ -28,6 +28,7 @@ func main() {
 	err = core.RunForm(conf)
 	if err != nil {
 		log.Error(fmt.Printf("Couldn't run: %e\n", err))
+		os.Exit(1)
 	}
 	apiUrl := core.BuildUrl(*conf)
 	split := strings.Split(dir, "/")

@@ -86,7 +86,7 @@ func (md *InitMetadata) BootVersionJsonToHuh() []huh.Option[Val] {
 	for _, ver := range md.BootVersion.Values {
 		options = append(options, huh.NewOption(ver.Name, Val{
 			Name: ver.Name,
-			ID:   ver.ID,
+			ID:   NormalizeVersion(ver.ID),
 		}))
 	}
 	return options

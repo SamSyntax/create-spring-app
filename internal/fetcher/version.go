@@ -6,7 +6,7 @@ import (
 	"github.com/Masterminds/semver/v3"
 )
 
-func normalizeVersion(v string) string {
+func NormalizeVersion(v string) string {
 	v = strings.ReplaceAll(v, ".RELEASE", "")
 	v = strings.ReplaceAll(v, ".M", "-M")
 	v = strings.ReplaceAll(v, ".RC", "-RC")
@@ -21,7 +21,7 @@ func CheckCompatibility(bootVersion, springRange string) bool {
 		return true
 	}
 
-	v, err := semver.NewVersion(normalizeVersion(bootVersion))
+	v, err := semver.NewVersion(NormalizeVersion(bootVersion))
 	if err != nil {
 		return false
 	}
@@ -30,7 +30,7 @@ func CheckCompatibility(bootVersion, springRange string) bool {
 	parts := strings.Split(springRange, ",")
 
 	if len(parts) != 2 {
-		norm := normalizeVersion(springRange)
+		norm := NormalizeVersion(springRange)
 		c, err := semver.NewConstraint(norm)
 		if err == nil {
 			return c.Check(v)
@@ -45,8 +45,8 @@ func CheckCompatibility(bootVersion, springRange string) bool {
 	left := parts[0]
 	right := parts[1]
 
-	lowVer := normalizeVersion(strings.Trim(left, "[]()"))
-	highVer := normalizeVersion(strings.Trim(right, "[]()"))
+	lowVer := NormalizeVersion(strings.Trim(left, "[]()"))
+	highVer := NormalizeVersion(strings.Trim(right, "[]()"))
 
 	var sb strings.Builder
 

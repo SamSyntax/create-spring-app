@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/SamSyntax/create-spring-app/internal/fetcher"
 	"github.com/SamSyntax/create-spring-app/internal/misc"
 	"github.com/charmbracelet/huh"
@@ -31,14 +33,25 @@ func RunForm(pc *ProjectConfig) error {
 	err := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().Title("Project Name").Value(&pc.ArtifactId).Description("Enter Project Name").Validate(misc.ValidateNoSpaces)),
-
 		huh.NewGroup(
 			huh.NewInput().Title("Group Name").Value(&pc.GroupName).Placeholder("com.example").Description("Enter Group Name").Validate(misc.ValidateNoSpaces)),
 	).WithTheme(theme).Run()
+	if pc.GroupName == "" {
+		pc.GroupName = "com.example"
+	}
+	var placeholder string
+	if pc.ArtifactId == "" {
+		dir, _ := misc.GetWorkingFolder()
+		splits := strings.Split(dir, "/")
+		name := splits[len(splits)-1]
+		placeholder = fmt.Sprintf("%s.%s", pc.GroupName, name)
+	} else {
+		placeholder = fmt.Sprintf("%s.%s", pc.GroupName, pc.ArtifactId)
+	}
 
 	err = huh.NewForm(
 		huh.NewGroup(
-			huh.NewInput().Title("Package Name").Value(&pc.PackageName).Placeholder(fmt.Sprintf("%s.%s", pc.GroupName, pc.ArtifactId)).Description("Enter package name").Validate(misc.ValidateNoSpaces)),
+			huh.NewInput().Title("Package Name").Value(&pc.PackageName).Placeholder(placeholder).Description("Enter package name").Validate(misc.ValidateNoSpaces)),
 
 		huh.NewGroup(
 			huh.NewSelect[fetcher.Val]().Title("SpringBoot version").Options(
