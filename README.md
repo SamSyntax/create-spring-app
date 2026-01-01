@@ -26,6 +26,11 @@ If you have Go installed, you can grab the latest version directly:
 ```bash
 go install github.com/SamSyntax/create-spring-app@latest
 ```
+Then you can run it:
+
+```bash
+create-spring-app
+```
 
 ### Building from Source
 
