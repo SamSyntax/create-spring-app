@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-func main() {
+func Runner() {
 	log.SetReportTimestamp(false)
 	log.SetLevel(log.DebugLevel)
 	conf, err := core.CreateProjectConfig()
