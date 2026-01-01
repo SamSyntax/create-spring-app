@@ -30,7 +30,15 @@ func CheckCompatibility(bootVersion, springRange string) bool {
 	parts := strings.Split(springRange, ",")
 
 	if len(parts) != 2 {
-		c, _ := semver.NewConstraint(">= " + normalizeVersion(springRange) + "-0")
+		norm := normalizeVersion(springRange)
+		c, err := semver.NewConstraint(norm)
+		if err == nil {
+			return c.Check(v)
+		}
+		c, err = semver.NewConstraint(">= " + norm + "-0")
+		if err != nil {
+			return false
+		}
 		return c.Check(v)
 	}
 
