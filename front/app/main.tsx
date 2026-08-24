@@ -6,7 +6,8 @@ import "./app.css";
 
 import { routeTree } from "./routeTree";
 
-const router = createRouter({ routeTree });
+const routerBasePath = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+const router = createRouter({ routeTree, basepath: routerBasePath });
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
