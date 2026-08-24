@@ -1,6 +1,7 @@
 package fetcher
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -55,7 +56,7 @@ func CheckCompatibility(bootVersion, springRange string) bool {
 	} else {
 		sb.WriteString("> ")
 	}
-	sb.WriteString(lowVer + "-0")
+	fmt.Fprintf(&sb, "%s-0", lowVer)
 	sb.WriteString(", ")
 
 	if strings.HasSuffix(right, "]") {

@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	dimmedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
+	dimmedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Strikethrough(true)
 	errorStyle  = lipgloss.NewStyle().Foreground(lipgloss.CompleteColor{
 		TrueColor: "#a01000",
 	})
@@ -61,7 +61,7 @@ func (md *InitMetadata) DepJsonToHuh(selectedBootVersion string) []huh.Option[st
 			isComp := CheckCompatibility(selectedBootVersion, dep.VersionRange)
 			if !isComp {
 				label = errorStyle.Render("✗ ") + dimmedStyle.Render(dep.Name) +
-					dimmedStyle.Render(fmt.Sprintf(" [Needs: %s]", dep.VersionRange))
+					dimmedStyle.Render(fmt.Sprintf(" [Needs: %s]", dep.VersionRange)) 
 			} else {
 				label = dep.Name
 			}
